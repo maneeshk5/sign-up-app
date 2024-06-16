@@ -1,10 +1,20 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { provideHttpClient } from '@angular/common/http';
+import { importProvidersFrom } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { RouterModule, provideRouter } from '@angular/router';
+import { routes } from './app.routes';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [AppComponent, RouterModule], // Import standalone component and RouterModule
+      providers: [
+        provideHttpClient(),
+        importProvidersFrom(ReactiveFormsModule),
+        provideRouter(routes)
+      ]
     }).compileComponents();
   });
 
@@ -14,16 +24,18 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'sign-up-app' title`, () => {
+  it(`should have as title 'sign-up-app'`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
     expect(app.title).toEqual('sign-up-app');
   });
 
-  it('should render title', () => {
+  it('should render title', waitForAsync(() => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, sign-up-app');
-  });
+    fixture.whenStable().then(() => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      expect(compiled.querySelector('h1')?.textContent).toContain('Welcome to sign-up-app!');
+    });
+  }));
 });
